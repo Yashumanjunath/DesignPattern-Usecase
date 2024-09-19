@@ -1,0 +1,84 @@
+3. Two use cases to demonstrate two structural design pattern.
+
+Use Case 1: Adapter Pattern
+Scenario: Legacy System Integration
+
+// Legacy class
+class FahrenheitThermometer {
+    public double getTemperature() {
+        return 98.6; // Example temperature in Fahrenheit
+    }
+}
+
+// Target interface
+interface Temperature {
+    double getTemperatureInCelsius();
+}
+
+// Adapter class
+class TemperatureAdapter implements Temperature {
+    private FahrenheitThermometer thermometer;
+
+    public TemperatureAdapter(FahrenheitThermometer thermometer) {
+        this.thermometer = thermometer;
+    }
+
+    @Override
+    public double getTemperatureInCelsius() {
+        double fahrenheit = thermometer.getTemperature();
+        return (fahrenheit - 32) * 5 / 9; // Convert to Celsius
+    }
+}
+
+// Usage
+public class Main {
+    public static void main(String[] args) {
+        FahrenheitThermometer legacyThermometer = new FahrenheitThermometer();
+        Temperature adapter = new TemperatureAdapter(legacyThermometer);
+        
+        System.out.println("Temperature in Celsius: " + adapter.getTemperatureInCelsius());
+    }
+}
+
+
+
+---------------------------------------------
+
+Use Case 2: Adapter Pattern
+Scenario: Payment Gateway Integration
+
+// New payment gateway class
+class NewPaymentGateway {
+    public void processPayment(double amount) {
+        System.out.println("Processing payment of $" + amount + " using New Payment Gateway.");
+    }
+}
+
+// Target interface
+interface Payment {
+    void makePayment(double amount);
+}
+
+// Adapter class
+class PaymentAdapter implements Payment {
+    private NewPaymentGateway newPaymentGateway;
+
+    public PaymentAdapter(NewPaymentGateway newPaymentGateway) {
+        this.newPaymentGateway = newPaymentGateway;
+    }
+
+    @Override
+    public void makePayment(double amount) {
+        newPaymentGateway.processPayment(amount);
+    }
+}
+
+// Usage
+public class Main {
+    public static void main(String[] args) {
+        NewPaymentGateway newGateway = new NewPaymentGateway();
+        Payment adapter = new PaymentAdapter(newGateway);
+        
+        adapter.makePayment(100.0); // Output: Processing payment of $100.0 using New Payment Gateway.
+    }
+}

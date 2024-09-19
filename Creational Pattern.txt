@@ -1,0 +1,119 @@
+2. Two use cases to demonstrate two creational design pattern.
+
+ Use case : Singleton Pattern 
+Scenario: logging system
+
+Code
+public class Logger {
+    private static Logger instance;
+    private PrintWriter logFile;
+
+    private Logger() {
+        try {
+            logFile = new PrintWriter(new FileWriter("app.log", true));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Logger getInstance() {
+        if (instance == null) {
+            instance = new Logger();
+        }
+        return instance;
+    }
+
+    public void log(String message) {
+        logFile.println(message);
+        logFile.flush();
+    }
+
+    public void close() {
+        logFile.close();
+    }
+}
+
+// Usage
+public class Main {
+    public static void main(String[] args) {
+        Logger logger1 = Logger.getInstance();
+        logger1.log("First log entry.");
+
+        Logger logger2 = Logger.getInstance();
+        logger2.log("Second log entry.");
+
+        System.out.println(logger1 == logger2); // True, both are the same instance
+        logger1.close();
+    }
+}
+
+
+-----------------------------------------------------
+
+Use case: Payement processesing
+
+//PaymentStrategy interface
+interface PaymentStrategy {
+    void pay(int amount);
+}
+
+// Concrete Strategies
+class CreditCardPayment implements PaymentStrategy {
+    @Override
+    public void pay(int amount) {
+        System.out.println("Paid " + amount + " using Credit Card.");
+    }
+}
+
+class PayPalPayment implements PaymentStrategy {
+    @Override
+    public void pay(int amount) {
+        System.out.println("Paid " + amount + " using PayPal.");
+    }
+}
+
+class BitcoinPayment implements PaymentStrategy {
+    @Override
+    public void pay(int amount) {
+        System.out.println("Paid " + amount + " using Bitcoin.");
+    }
+}
+
+// ShoppingCart class
+class ShoppingCart {
+    private List<Integer> items;
+    private PaymentStrategy paymentStrategy;
+
+    public ShoppingCart() {
+        items = new ArrayList<>();
+    }
+
+    public void addItem(int item) {
+        items.add(item);
+    }
+
+    public void setPaymentStrategy(PaymentStrategy strategy) {
+        this.paymentStrategy = strategy;
+    }
+
+    public void checkout() {
+        int totalAmount = items.stream().mapToInt(Integer::intValue).sum();
+        if (paymentStrategy != null) {
+            paymentStrategy.pay(totalAmount);
+        } else {
+            System.out.println("No payment strategy set!");
+        }
+    }
+}
+
+// Usage
+public class StrategyPatternDemo {
+    public static void main(String[] args) {
+        ShoppingCart cart = new ShoppingCart();
+        cart.addItem(100);
+        cart.addItem(200);
+
+        cart.setPaymentStrategy(new CreditCardPayment());
+        cart.checkout(); // Outputs: Paid 300 using Credit Card.
+    }
+}

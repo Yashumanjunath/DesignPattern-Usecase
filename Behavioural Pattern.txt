@@ -1,0 +1,143 @@
+1. Two use cases to demonstrate two behavioural design pattern.
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+// Subject
+interface Subject {
+    void registerObserver(Observer observer);
+    void removeObserver(Observer observer);
+    void notifyObservers();
+}
+
+// Observer
+interface Observer {
+    void update(float temperature);
+}
+
+// Concrete Subject
+class WeatherStation implements Subject {
+    private List<Observer> observers;
+    private float temperature;
+
+    public WeatherStation() {
+        observers = new ArrayList<>();
+    }
+
+    @Override
+    public void registerObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (Observer observer : observers) {
+            observer.update(temperature);
+        }
+    }
+
+    public void setTemperature(float temperature) {
+        this.temperature = temperature;
+        notifyObservers();
+    }
+}
+
+// Concrete Observer
+class DisplayDevice implements Observer {
+    @Override
+    public void update(float temperature) {
+        System.out.println("Temperature updated to: " + temperature + "°C");
+    }
+}
+
+// Usage
+public class ObserverPatternDemo {
+    public static void main(String[] args) {
+        WeatherStation weatherStation = new WeatherStation();
+        DisplayDevice displayDevice1 = new DisplayDevice();
+        DisplayDevice displayDevice2 = new DisplayDevice();
+
+        weatherStation.registerObserver(displayDevice1);
+        weatherStation.registerObserver(displayDevice2);
+
+        weatherStation.setTemperature(25.0f); // Notifies all observers
+    }
+}
+
+
+-----------------------------------------------------------
+
+Use case: payment processing 
+
+
+// PaymentStrategy interface
+interface PaymentStrategy {
+    void pay(int amount);
+}
+
+// Concrete Strategies
+class CreditCardPayment implements PaymentStrategy {
+    @Override
+    public void pay(int amount) {
+        System.out.println("Paid " + amount + " using Credit Card.");
+    }
+}
+
+class PayPalPayment implements PaymentStrategy {
+    @Override
+    public void pay(int amount) {
+        System.out.println("Paid " + amount + " using PayPal.");
+    }
+}
+
+class BitcoinPayment implements PaymentStrategy {
+    @Override
+    public void pay(int amount) {
+        System.out.println("Paid " + amount + " using Bitcoin.");
+    }
+}
+
+// ShoppingCart class
+class ShoppingCart {
+    private List<Integer> items;
+    private PaymentStrategy paymentStrategy;
+
+    public ShoppingCart() {
+        items = new ArrayList<>();
+    }
+
+    public void addItem(int item) {
+        items.add(item);
+    }
+
+    public void setPaymentStrategy(PaymentStrategy strategy) {
+        this.paymentStrategy = strategy;
+    }
+
+    public void checkout() {
+        int totalAmount = items.stream().mapToInt(Integer::intValue).sum();
+        if (paymentStrategy != null) {
+            paymentStrategy.pay(totalAmount);
+        } else {
+            System.out.println("No payment strategy set!");
+        }
+    }
+}
+
+// Usage
+public class StrategyPatternDemo {
+    public static void main(String[] args) {
+        ShoppingCart cart = new ShoppingCart();
+        cart.addItem(100);
+        cart.addItem(200);
+
+        cart.setPaymentStrategy(new CreditCardPayment());
+        cart.checkout(); // Outputs: Paid 300 using Credit Card.
+    }
+}
